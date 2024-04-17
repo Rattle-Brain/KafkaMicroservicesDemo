@@ -24,18 +24,18 @@ This project showcases various aspects of Kafka, including:
 
 To run the Kafka microservices application locally, follow these steps:
 
-1. **Prerequisites:** Ensure that you have Java JDK, Apache Kafka, and Maven installed on your system.
+1. **Prerequisites:** Ensure that you have Java JDK **17**, Apache Kafka, and Maven installed on your system.
 
 2. **Clone the Repository:** Clone this repository to your local machine using Git:
 
    ```bash
-   git clone https://github.com/yourusername/kafka-microservices-app.git
+   git clone https://github.com/Rattle-Brain/KafkaMicroservicesDemo.git
    ```
 
 3. **Build the Project:** Navigate to the project directory and build the project using Maven:
 
    ```bash
-   cd kafka-microservices-app
+   cd KafkaMicroservicesDemo
    mvn clean install
    ```
 
