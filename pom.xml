@@ -16,7 +16,7 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>KafkaSpringBootProvider</module>
+		<module>KafkaSpringBootProducer</module>
 		<module>KafkaSpringBootConsumer</module>
 	</modules>
 

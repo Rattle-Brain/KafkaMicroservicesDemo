@@ -8,10 +8,10 @@
 		<version>0.0.1-SNAPSHOT</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.kafka.provider</groupId>
-	<artifactId>KafkaSpringBootProvider</artifactId>
+	<groupId>com.kafka.producer</groupId>
+	<artifactId>KafkaSpringBootProducer</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>KafkaSpringBootProvider</name>
+	<name>KafkaSpringBootProducer</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>17</java.version>
