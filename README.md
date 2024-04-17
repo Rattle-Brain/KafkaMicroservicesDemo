@@ -4,6 +4,8 @@ This repository contains a Java project developed with Spring Boot that serves a
 
 ## Overview
 
+<img src="https://uploads-ssl.webflow.com/62038ffc9cd2db4558e3c7b7/623b44a1913c46041e39c836_kafka.svg" align="right" width="200" height="200"/>
+
 Kafka is a distributed streaming platform that enables the building of real-time data pipelines and streaming applications. It provides high-throughput, fault-tolerant, and horizontally scalable messaging capabilities, making it an ideal choice for building event-driven microservices architectures.
 
 This project showcases various aspects of Kafka, including:
