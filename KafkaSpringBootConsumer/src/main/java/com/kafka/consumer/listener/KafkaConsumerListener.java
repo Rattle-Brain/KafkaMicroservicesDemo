@@ -11,12 +11,12 @@ public class KafkaConsumerListener {
     private Logger LOGGER = LoggerFactory.getLogger(KafkaConsumerListener.class);
 
     @KafkaListener(topics = {"this-new-topic"}, groupId = "new-topic-groupid")
-    public void listenerNew(String message){
-        LOGGER.info("Msg from topic \"this-new-topic\": " + message);
+    public void listenerNew(String msg){
+        LOGGER.info("Msg from topic \"this-new-topic\": " + msg);
     }
 
     @KafkaListener(topics = {"kafka-games-topic"}, groupId = "kafka-games-groupid")
-    public void listenerGames(String message){
-        LOGGER.info("Msg from topic \"kafka-games-toic\": " + message);
+    public void listenerGames(String msg){
+        LOGGER.info("Msg from topic \"kafka-games-toic\": " + msg);
     }
 }
