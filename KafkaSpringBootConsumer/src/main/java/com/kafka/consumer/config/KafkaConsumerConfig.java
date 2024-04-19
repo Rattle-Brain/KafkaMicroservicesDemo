@@ -18,24 +18,24 @@ import java.util.Map;
 public class KafkaConsumerConfig {
 
     @Value("${spring.kafka.bootstrapServers}")
-    private String bootstrapServers;
+    private String server;
 
 
-    public Map<String, Object> consumerConfig(){
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        return properties;
+    public Map<String, Object> initConfig(){
+        Map<String, Object> conf = new HashMap<>();
+        conf.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, server);
+        conf.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        conf.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        return conf;
     }
 
     @Bean
     public ConsumerFactory<String, String> consumerFactory(){
-        return new DefaultKafkaConsumerFactory<>(consumerConfig());
+        return new DefaultKafkaConsumerFactory<>(initConfig());
     }
 
     @Bean
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> consumer(ConsumerFactory consumerFactory) {
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>>consumer(ConsumerFactory consumerFactory) {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory);
         return factory;
