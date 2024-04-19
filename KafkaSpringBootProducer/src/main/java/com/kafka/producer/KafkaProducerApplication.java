@@ -40,6 +40,7 @@ public class KafkaProducerApplication {
 				System.out.println("Message sent to Kafka: " + input);
 			}
 			System.out.println("Exiting Kafka Producer Application...");
+			System.exit(0);
 		};
 	}
 
