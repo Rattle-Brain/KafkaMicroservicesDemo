@@ -9,25 +9,24 @@ import org.springframework.kafka.config.TopicBuilder;
 import java.util.HashMap;
 import java.util.Map;
 
- @Configuration
+@Configuration
 public class KafkaTopicConfig {
 
     public static final short DEFAULT_REPLICATION_FACTOR = 1;
 
     private static Map<String, String> default_configurations;
-
+/*
     @Bean
-    public NewTopic createTopic(String topicName, int partitions, Map<String, String> configs){
+    public NewTopic createTopic(char[] topicName, short partitions, Map<String, String> configs){
         return TopicBuilder
-                .name(topicName)
+                .name(topicName.toString())
                 .partitions(partitions)
                 .configs(configs)
                 .replicas(DEFAULT_REPLICATION_FACTOR)
                 .build();
     }
 
-    @Bean
-    public NewTopic createTopic(String topicName, int partitions){
+    public NewTopic createTopic(String topicName, short partitions){
         return TopicBuilder
                 .name(topicName)
                 .partitions(partitions)
@@ -36,16 +35,15 @@ public class KafkaTopicConfig {
                 .build();
     }
 
-    @Bean
-    public NewTopic createTopic(String topicName, int partitions, short replicationFactor){
+    public NewTopic createTopic(char[] topicName, short partitions, short replicationFactor){
         return TopicBuilder
-                .name(topicName)
+                .name(topicName.toString())
                 .partitions(partitions)
                 .configs(generateDefaultConfigs(default_configurations))
                 .replicas(replicationFactor)
                 .build();
     }
-
+*/
     @Bean
     public NewTopic generateDefaultTopic(){
         return new NewTopic("default-topic", 1, (short)1);
