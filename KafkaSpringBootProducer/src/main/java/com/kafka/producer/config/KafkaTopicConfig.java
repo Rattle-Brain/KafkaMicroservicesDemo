@@ -2,10 +2,12 @@
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.config.TopicConfig;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.TopicBuilder;
 
+import java.beans.BeanProperty;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,18 +17,17 @@ public class KafkaTopicConfig {
     public static final short DEFAULT_REPLICATION_FACTOR = 1;
 
     private static Map<String, String> default_configurations;
-/*
-    @Bean
-    public NewTopic createTopic(char[] topicName, short partitions, Map<String, String> configs){
+
+    public NewTopic createTopic(String topicName, int partitions, Map<String, String> configs){
         return TopicBuilder
-                .name(topicName.toString())
+                .name(topicName)
                 .partitions(partitions)
                 .configs(configs)
                 .replicas(DEFAULT_REPLICATION_FACTOR)
                 .build();
     }
 
-    public NewTopic createTopic(String topicName, short partitions){
+    public NewTopic createTopic(String topicName, int partitions){
         return TopicBuilder
                 .name(topicName)
                 .partitions(partitions)
@@ -35,15 +36,15 @@ public class KafkaTopicConfig {
                 .build();
     }
 
-    public NewTopic createTopic(char[] topicName, short partitions, short replicationFactor){
+    public NewTopic createTopic(String topicName, int partitions, short replicationFactor){
         return TopicBuilder
-                .name(topicName.toString())
+                .name(topicName)
                 .partitions(partitions)
                 .configs(generateDefaultConfigs(default_configurations))
                 .replicas(replicationFactor)
                 .build();
     }
-*/
+
     @Bean
     public NewTopic generateDefaultTopic(){
         return new NewTopic("default-topic", 1, (short)1);

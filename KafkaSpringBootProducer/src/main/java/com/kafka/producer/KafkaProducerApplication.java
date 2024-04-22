@@ -16,10 +16,10 @@ import java.io.InputStreamReader;
 @SpringBootApplication
 public class KafkaProducerApplication {
 
-	@Autowired
+	//@Autowired
 	private KafkaAdmin kafkaAdmin;
 
-	@Autowired
+	//@Autowired
 	private KafkaTopicConfig ktc;
 
 	public static void main(String[] args) {
@@ -34,9 +34,10 @@ public class KafkaProducerApplication {
 			while (true) {
 				String input = reader.readLine();
 				if (input.equalsIgnoreCase("exit")) {
+					kt.send("default-topic", "Producer died");
 					break;
 				}
-				kt.send("default-topic", input);
+				kt.send("this-new-topic", input);
 				System.out.println("Message sent to Kafka: " + input);
 			}
 			System.out.println("Exiting Kafka Producer Application...");
@@ -47,8 +48,8 @@ public class KafkaProducerApplication {
 	@Bean
 	public NewTopic topic1() {
 		ktc = new KafkaTopicConfig();
-		//return ktc.createTopic("this-new-topic".toCharArray(), (short)3, KafkaTopicConfig.DEFAULT_REPLICATION_FACTOR);
-		return ktc.generateDefaultTopic();
+		return ktc.createTopic("this-new-topic", 3, KafkaTopicConfig.DEFAULT_REPLICATION_FACTOR);
+		//return ktc.generateDefaultTopic();
 	}
 /*
 	@Bean
