@@ -13,7 +13,7 @@ public class KafkaConsumerListener {
 
     @KafkaListener(topics = {"this-new-topic"}, groupId = "new-topic-groupid")
     public void listenerNew(String msg){
-        LOGGER.info("Msg from topic \"this-new-topic\": " + msg);
+        System.out.println("Msg from topic \"this-new-topic\": " + msg);
     }
     @KafkaListener(id = "my-consumer", groupId = "new-topic-groupid", topicPattern = ".*")
     public void listenToAllTopics(String message, @Header("kafka_receivedTopic") String topic) {
