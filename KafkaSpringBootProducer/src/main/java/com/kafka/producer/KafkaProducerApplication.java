@@ -15,6 +15,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 @SpringBootApplication
 public class KafkaProducerApplication {
 
+	public final static String JSON_EVENTS_TOPIC = "json-file-events";
+
 	@Autowired
 	private KafkaAdmin kafkaAdmin;
 
@@ -28,7 +30,7 @@ public class KafkaProducerApplication {
 	@Bean
 	CommandLineRunner init (KafkaTemplate<String, String> kt){
 		return args -> {
-			KafkaProducerUtils.readSendUserInput(kt);
+			KafkaProducerUtils.sendFileJSON(kt);
 		};
 	}
 
@@ -53,6 +55,6 @@ public class KafkaProducerApplication {
 	@Bean
 	public NewTopic topicJSON() {
 		ktc = new KafkaTopicConfig();
-		return ktc.createTopic("json-file-events", 1, KafkaTopicConfig.DEFAULT_REPLICATION_FACTOR);
+		return ktc.createTopic(JSON_EVENTS_TOPIC, 1, KafkaTopicConfig.DEFAULT_REPLICATION_FACTOR);
 	}
 }

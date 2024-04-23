@@ -1,6 +1,7 @@
 package com.kafka.producer.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kafka.producer.KafkaProducerApplication;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -65,5 +66,55 @@ public class KafkaProducerUtils {
         }
         System.out.println("Exiting Kafka Producer Application...");
         System.exit(0);
+    }
+
+    public static void sendFileJSON(KafkaTemplate<String, String> kt) throws NullPointerException{
+        ArrayList<String> events = null;
+        while(true) {
+            try {
+                events = fileEventJSONTracer(Paths.get(System.getProperty("user.home")));
+            } catch (IOException ioe) {
+                System.err.println(ioe.getMessage());
+            } catch (InterruptedException inte) {
+                System.err.println(inte.getMessage());
+            }
+
+            for (String ev : events) {
+                kt.send(KafkaProducerApplication.JSON_EVENTS_TOPIC, ev);
+                System.out.println("Event Sent");
+            }
+        }
+    }
+
+    public static ArrayList<String> fileEventJSONTracer(Path rootPath)
+            throws IOException, InterruptedException {
+        WatchService watchService = FileSystems.getDefault().newWatchService();
+        System.out.println(rootPath.toString());
+        WatchKey key = watchService.take();
+
+        ObjectMapper om = new ObjectMapper();
+
+        ArrayList<String> jsonObjects = new ArrayList<>();
+
+        for (WatchEvent<?> event : key.pollEvents()) {
+            if (event.kind() == StandardWatchEventKinds.OVERFLOW) {
+                continue;
+            }
+            WatchEvent<Path> ev = (WatchEvent<Path>) event;
+            Path filename = ev.context();
+            System.out.println(filename.toString());
+            Path fullPath = rootPath.resolve(filename);
+            System.out.println(fullPath.toString());
+            String action = (event.kind() == StandardWatchEventKinds.ENTRY_CREATE) ? "open" : "close";
+            String user = System.getProperty("user.name");
+            System.out.println(user);
+            Date date = new Date();
+
+            FileEventData eventData = new FileEventData(filename.toString(), fullPath.toString(), user, date, action);
+            String jsonEvent = om.writeValueAsString(eventData);
+            jsonObjects.add(jsonEvent);
+        }
+        key.reset();
+        return jsonObjects;
     }
 }
