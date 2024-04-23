@@ -2,10 +2,7 @@ package com.kafka.producer.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kafka.producer.KafkaProducerApplication;
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.retrytopic.DestinationTopic;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,8 +11,6 @@ import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class KafkaProducerUtils {
 
@@ -88,33 +83,50 @@ public class KafkaProducerUtils {
 
     public static ArrayList<String> fileEventJSONTracer(Path rootPath)
             throws IOException, InterruptedException {
-        WatchService watchService = FileSystems.getDefault().newWatchService();
-        System.out.println(rootPath.toString());
-        WatchKey key = watchService.take();
+        int batch = 10; // Prevent infinite loop (an async thread would be better but...)
+        WatchService watchService
+                = FileSystems.getDefault().newWatchService();
+
+        rootPath.register(
+                watchService,
+                StandardWatchEventKinds.ENTRY_CREATE,
+                StandardWatchEventKinds.ENTRY_DELETE,
+                StandardWatchEventKinds.ENTRY_MODIFY);
 
         ObjectMapper om = new ObjectMapper();
 
         ArrayList<String> jsonObjects = new ArrayList<>();
 
-        for (WatchEvent<?> event : key.pollEvents()) {
-            if (event.kind() == StandardWatchEventKinds.OVERFLOW) {
-                continue;
-            }
-            WatchEvent<Path> ev = (WatchEvent<Path>) event;
-            Path filename = ev.context();
-            System.out.println(filename.toString());
-            Path fullPath = rootPath.resolve(filename);
-            System.out.println(fullPath.toString());
-            String action = (event.kind() == StandardWatchEventKinds.ENTRY_CREATE) ? "open" : "close";
-            String user = System.getProperty("user.name");
-            System.out.println(user);
-            Date date = new Date();
+        WatchKey key;
+        while ((key = watchService.take()) != null) {
+            for (WatchEvent<?> event : key.pollEvents()) {
+                Path filename = (Path)event.context();
+                Path fullPath = rootPath.resolve(filename);
+                String user = System.getProperty("user.name");
+                Date date = new Date();
+                String action = stringifyAction(event.kind());
+                batch--;
 
-            FileEventData eventData = new FileEventData(filename.toString(), fullPath.toString(), user, date, action);
-            String jsonEvent = om.writeValueAsString(eventData);
-            jsonObjects.add(jsonEvent);
+                FileEventData eventData = new FileEventData(filename.toString(), fullPath.toString(), user, date, action);
+                String jsonEvent = om.writeValueAsString(eventData);
+                jsonObjects.add(jsonEvent);
+                if(batch == 0){
+                    batch = 10;
+                    return jsonObjects;
+                }
+            }
+            key.reset();
         }
-        key.reset();
         return jsonObjects;
+    }
+
+    private static String stringifyAction(WatchEvent.Kind<?> kind) {
+        if (kind.equals(StandardWatchEventKinds.ENTRY_CREATE)) {
+            return "FILE CREATION";
+        }else if (kind.equals(StandardWatchEventKinds.ENTRY_DELETE)){
+            return "FILE DELETION";
+        }else{
+            return "FILE MODIFICATION";
+        }
     }
 }
