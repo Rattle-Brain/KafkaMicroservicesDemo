@@ -1,10 +1,19 @@
 package com.kafka.producer.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.retrytopic.DestinationTopic;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.file.*;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class KafkaProducerUtils {
@@ -34,4 +43,27 @@ public class KafkaProducerUtils {
         return result;
     }
 
+    public static void readSendUserInput(KafkaTemplate<String, String> kt) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("Enter your message (type 'exit' to quit):");
+        while (true) {
+            String input = reader.readLine();
+            if (input.equalsIgnoreCase("exit")) {
+                kt.send("default-topic", "Producer died");
+                break;
+            }
+
+            HashMap <String, String> result;
+            try {
+                result = parseUserInput(input);
+            }catch(IllegalArgumentException iae){
+                System.err.println(iae.getMessage());
+                continue;
+            }
+            kt.send(result.get("topic"), result.get("msg"));
+            System.out.println("Message sent to Kafka: " + input);
+        }
+        System.out.println("Exiting Kafka Producer Application...");
+        System.exit(0);
+    }
 }
