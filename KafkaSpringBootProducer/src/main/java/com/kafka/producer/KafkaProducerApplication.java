@@ -20,10 +20,10 @@ import static com.kafka.producer.utils.KafkaProducerUtils.parseUserInput;
 @SpringBootApplication
 public class KafkaProducerApplication {
 
-	//@Autowired
+	@Autowired
 	private KafkaAdmin kafkaAdmin;
 
-	//@Autowired
+	@Autowired
 	private KafkaTopicConfig ktc;
 
 	public static void main(String[] args) {
