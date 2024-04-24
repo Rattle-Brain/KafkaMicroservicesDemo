@@ -1,6 +1,5 @@
 package com.kafka.producer;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
 import com.kafka.producer.config.KafkaTopicConfig;
 import com.kafka.producer.utils.KafkaProducerUtils;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -16,9 +15,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 public class KafkaProducerApplication {
 
 	public final static String JSON_EVENTS_TOPIC = "json-file-events";
-
-	@Autowired
-	private KafkaAdmin kafkaAdmin;
 
 	@Autowired
 	private KafkaTopicConfig ktc;
@@ -49,7 +45,7 @@ public class KafkaProducerApplication {
 	@Bean
 	public NewTopic topic3() {
 		ktc = new KafkaTopicConfig();
-		return ktc.createTopic("default-topic", 1, KafkaTopicConfig.DEFAULT_REPLICATION_FACTOR);
+		return ktc.createTopic("default-topic", 3, KafkaTopicConfig.DEFAULT_REPLICATION_FACTOR);
 	}
 
 	@Bean
