@@ -22,6 +22,7 @@ public class KafkaConsumerListener {
 */
     @KafkaListener(topics = {"json-file-events"}, groupId = "JSON-listener-id")
     public void listenerJSONFileEvents(String msg){
-        LOGGER.info("Msg from topic \"json-file-events\": " + msg);
+        LOGGER.info("Msg from topic \"json-file-events\":\n");
+        System.out.println("\t" + msg);
     }
 }
