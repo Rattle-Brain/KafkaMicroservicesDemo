@@ -10,7 +10,7 @@ import org.springframework.messaging.handler.annotation.Header;
 public class KafkaConsumerListener {
 
     private Logger LOGGER = LoggerFactory.getLogger(KafkaConsumerListener.class);
-
+/*
     @KafkaListener(topics = {"this-new-topic"}, groupId = "new-topic-groupid")
     public void listenerNew(String msg){
         System.out.println("Msg from topic \"this-new-topic\": " + msg);
@@ -19,7 +19,7 @@ public class KafkaConsumerListener {
     public void listenToAllTopics(String message, @Header("kafka_receivedTopic") String topic) {
         System.out.println("Msg from topic \"" + topic + "\": " + message);
     }
-
+*/
     @KafkaListener(topics = {"json-file-events"}, groupId = "JSON-listener-id")
     public void listenerJSONFileEvents(String msg){
         LOGGER.info("Msg from topic \"json-file-events\": " + msg);
