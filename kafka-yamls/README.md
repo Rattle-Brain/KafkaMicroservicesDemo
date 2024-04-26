@@ -9,6 +9,7 @@ It's been tested with a minikube deployment in a local computer and not with a f
 - `kafka-namespace.yaml`: Defines a specific namespace for Kafka. (Alternatively you can run `kubectl create namespace <add-namespace-here>`)
 - `zookeeper-deployment.yaml`: Defines a Kubernetes Deployment and Service for Zookeeper.
 - `kafka-broker-deployment.yaml`: Defines a Kubernetes Deployment and Service for the Kafka brokers.
+- `schema-resgistry.yaml`: Defines a Service and Deployment for a schema registry listening on port 8081.
 
 ## Usage
 
