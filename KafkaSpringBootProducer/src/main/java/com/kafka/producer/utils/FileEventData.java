@@ -6,10 +6,10 @@ public class FileEventData {
     private String fileName;
     private String filePath;
     private String user;
-    private Date date;
+    private String date;
     private String action;
 
-    public FileEventData(String fileName, String filePath, String user, Date date, String action) {
+    public FileEventData(String fileName, String filePath, String user, String date, String action) {
         setFileName(fileName);
         setFilePath(filePath);
         setUser(user);
@@ -41,11 +41,11 @@ public class FileEventData {
         this.user = user;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    private void setDate(Date date) {
+    private void setDate(String date) {
         this.date = date;
     }
 

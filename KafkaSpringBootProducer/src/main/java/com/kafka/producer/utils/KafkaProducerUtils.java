@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -107,7 +108,9 @@ public class KafkaProducerUtils {
                 String action = stringifyAction(event.kind());
                 batch--;
 
-                FileEventData eventData = new FileEventData(filename.toString(), fullPath.toString(), user, date, action);
+                String formattedDate = formatDate(date);
+
+                FileEventData eventData = new FileEventData(filename.toString(), fullPath.toString(), user, formattedDate, action);
                 String jsonEvent = om.writeValueAsString(eventData);
                 jsonObjects.add(jsonEvent);
                 if(batch == 0){
@@ -128,5 +131,10 @@ public class KafkaProducerUtils {
         }else{
             return "FILE MODIFICATION";
         }
+    }
+
+    private static String formatDate(Date d){
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        return sdf.format(d);
     }
 }
