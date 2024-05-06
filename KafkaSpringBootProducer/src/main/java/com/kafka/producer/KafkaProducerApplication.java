@@ -1,5 +1,6 @@
 package com.kafka.producer;
 
+import com.kafka.producer.config.KafkaProducerConfig;
 import com.kafka.producer.config.KafkaTopicConfig;
 import com.kafka.producer.utils.KafkaProducerUtils;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -8,7 +9,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
 
 @SpringBootApplication
@@ -19,6 +19,9 @@ public class KafkaProducerApplication {
 	@Autowired
 	private KafkaTopicConfig ktc;
 
+	@Autowired
+	private KafkaProducerConfig kpc;
+
 	public static void main(String[] args) {
 		SpringApplication.run(KafkaProducerApplication.class, args);
 	}
@@ -26,7 +29,7 @@ public class KafkaProducerApplication {
 	@Bean
 	CommandLineRunner init (KafkaTemplate<String, String> kt){
 		return args -> {
-			KafkaProducerUtils.sendFileJSON(kt);
+			KafkaProducerUtils.sendFileJSON(kpc.kafkaTemplate(kpc.producerFactory()));
 		};
 	}
 
