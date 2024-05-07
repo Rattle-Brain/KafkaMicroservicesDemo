@@ -25,4 +25,10 @@ public class KafkaConsumerListener {
         LOGGER.info("Msg from topic \"json-file-events\":\n");
         System.out.println("\t" + msg);
     }
+
+    @KafkaListener(topics = {"bpf-events-topic"}, groupId = "BPF-listener-id")
+    public void listenerBPFEvents(String msg){
+        //LOGGER.info("Msg from topic \"json-file-events\":\n");
+        System.out.println("\t" + msg);
+    }
 }
