@@ -9,5 +9,3 @@
     {"name": "action", "type": "string"}
   ]
 }
-
-'{"schema": "{\"type\":\"record\",\"name\":\"FileEvent\",\"fields\":[{\"name\":\"fileName\",\"type\":\"string\"},{\"name\":\"filePath\",\"type\":\"string\"},{\"name\":\"user\",\"type\":\"string\"},{\"name\":\"date\",\"type\":\"string\"},{\"name\":\"action\",\"type\":\"string\"}]}"}'

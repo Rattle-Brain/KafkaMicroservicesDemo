@@ -32,18 +32,18 @@ public class UDPSockUtils {
                 socket.receive(packet);
 
                 // From bytes to string
-                String message = new String(packet.getData(), 0, packet.getLength());
+                String message = new String(packet.getData());
 
                 // Split the msg in parts
                 String[] parts = message.split(" ");
-                int cpu = Integer.parseInt(parts[1]);
-                String comm = parts[2];
-                int pid = Integer.parseInt(parts[4]);
-                String fName = parts[5];
+                int cpu = Integer.parseInt(parts[0]);
+                String comm = parts[1];
+                int pid = Integer.parseInt(parts[2]);
+                String fName = parts[3];
                 System.out.println("Message received and parsed...");
 
                 // We want to observe the events of dockerd, not all of them.
-                if(comm.trim().equals("dockerd")){
+                if(comm.trim().contains("dockerd")){
                     message = String.format("CPU %02d %s %d ran: %s\n", cpu, comm.trim(), pid, fName.trim());
 
 
