@@ -1,6 +1,7 @@
 package com.kafka.producer.config;
 
 import com.fasterxml.jackson.databind.ser.std.StringSerializer;
+import com.kafka.producer.utils.SchemaRegistryUtils;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,13 +26,13 @@ public class KafkaProducerConfig {
                 org.apache.kafka.common.serialization.StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
                 io.confluent.kafka.serializers.KafkaAvroSerializer.class);
-        props.put("schema.registry.url", "http://localhost:8081");
+        props.put("schema.registry.url", SchemaRegistryUtils.SCHEMA_URL);
 
         return props;
     }
 
     //@Bean
-    public static KafkaProducer createProducer(){
+    public static KafkaProducer<Object, Object> createProducer(){
         Properties props = producerConfig();
         return new KafkaProducer(props);
     }

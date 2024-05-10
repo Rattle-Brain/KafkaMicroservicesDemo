@@ -5,7 +5,9 @@ import com.kafka.producer.KafkaProducerApplication;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
+import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.errors.SerializationException;
 import org.springframework.kafka.core.KafkaTemplate;
 
 import java.io.BufferedReader;
@@ -68,8 +70,8 @@ public class KafkaProducerUtils {
         System.exit(0);
     }
 
-    public static void sendFileJSON(KafkaTemplate<String, ProducerRecord> kt) throws NullPointerException{
-        ArrayList<ProducerRecord> records = null;
+    public static void sendFileJSON(KafkaProducer<Object, Object> kp) throws NullPointerException{
+        ArrayList<ProducerRecord<Object, Object>> records = null;
         while(true) {
             try {
                 records = fileEventJSONTracer(Paths.get(System.getProperty("user.home")));
@@ -80,13 +82,18 @@ public class KafkaProducerUtils {
             }
 
             for (ProducerRecord pr : records) {
-                kt.send(KafkaProducerApplication.JSON_EVENTS_TOPIC, pr);
-                System.out.println("Event Sent");
+                try {
+                    kp.send(pr);
+                    System.out.println("Event Sent");
+                }catch(SerializationException se){
+                    System.err.println(se.getMessage());
+                    kp.flush();
+                }
             }
         }
     }
 
-    public static ArrayList<ProducerRecord> fileEventJSONTracer(Path rootPath)
+    public static ArrayList<ProducerRecord<Object, Object>> fileEventJSONTracer(Path rootPath)
             throws IOException, InterruptedException {
         int batch = 10; // Prevent infinite loop (an async thread would be better but...)
         WatchService watchService
@@ -100,7 +107,7 @@ public class KafkaProducerUtils {
 
         ObjectMapper om = new ObjectMapper();
 
-        ArrayList<ProducerRecord> producerRecords = new ArrayList<>();
+        ArrayList<ProducerRecord<Object, Object>> producerRecords = new ArrayList<>();
 
         WatchKey key;
         while ((key = watchService.take()) != null) {

@@ -1,9 +1,11 @@
 package com.kafka.producer;
 
+import com.kafka.producer.config.KafkaProducerConfig;
 import com.kafka.producer.config.KafkaTopicConfig;
 import com.kafka.producer.utils.KafkaProducerUtils;
 import com.kafka.producer.utils.UDPSockUtils;
 import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -20,6 +22,8 @@ public class KafkaProducerApplication {
 	@Autowired
 	private KafkaTopicConfig ktc;
 
+	private KafkaProducer kp = KafkaProducerConfig.createProducer();
+
 	public static void main(String[] args) {
 		SpringApplication.run(KafkaProducerApplication.class, args);
 	}
@@ -27,7 +31,7 @@ public class KafkaProducerApplication {
 	@Bean
 	CommandLineRunner init (KafkaTemplate<String, ProducerRecord> kt){
 		return args -> {
-			KafkaProducerUtils.sendFileJSON(kt);
+			KafkaProducerUtils.sendFileJSON(kp);
 			//UDPSockUtils.retrieveUDP(kt, 3040);
 		};
 	}
