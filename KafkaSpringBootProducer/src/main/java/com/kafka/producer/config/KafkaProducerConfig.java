@@ -18,7 +18,7 @@ public class KafkaProducerConfig {
     @Value("${spring.kafka.bootstrapServers}")
     private String server;
 
-    public Properties producerConfig(){
+    public static Properties producerConfig(){
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
@@ -31,7 +31,7 @@ public class KafkaProducerConfig {
     }
 
     //@Bean
-    public KafkaProducer createProducer(){
+    public static KafkaProducer createProducer(){
         Properties props = producerConfig();
         return new KafkaProducer(props);
     }
