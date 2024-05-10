@@ -2,6 +2,10 @@ package com.kafka.producer.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kafka.producer.KafkaProducerApplication;
+import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericRecord;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.kafka.core.KafkaTemplate;
 
 import java.io.BufferedReader;
@@ -64,25 +68,25 @@ public class KafkaProducerUtils {
         System.exit(0);
     }
 
-    public static void sendFileJSON(KafkaTemplate<String, String> kt) throws NullPointerException{
-        ArrayList<String> events = null;
+    public static void sendFileJSON(KafkaTemplate<String, ProducerRecord> kt) throws NullPointerException{
+        ArrayList<ProducerRecord> records = null;
         while(true) {
             try {
-                events = fileEventJSONTracer(Paths.get(System.getProperty("user.home")));
+                records = fileEventJSONTracer(Paths.get(System.getProperty("user.home")));
             } catch (IOException ioe) {
                 System.err.println(ioe.getMessage());
             } catch (InterruptedException inte) {
                 System.err.println(inte.getMessage());
             }
 
-            for (String ev : events) {
-                kt.send(KafkaProducerApplication.JSON_EVENTS_TOPIC, ev);
+            for (ProducerRecord pr : records) {
+                kt.send(KafkaProducerApplication.JSON_EVENTS_TOPIC, pr);
                 System.out.println("Event Sent");
             }
         }
     }
 
-    public static ArrayList<String> fileEventJSONTracer(Path rootPath)
+    public static ArrayList<ProducerRecord> fileEventJSONTracer(Path rootPath)
             throws IOException, InterruptedException {
         int batch = 10; // Prevent infinite loop (an async thread would be better but...)
         WatchService watchService
@@ -96,31 +100,53 @@ public class KafkaProducerUtils {
 
         ObjectMapper om = new ObjectMapper();
 
-        ArrayList<String> jsonObjects = new ArrayList<>();
+        ArrayList<ProducerRecord> producerRecords = new ArrayList<>();
 
         WatchKey key;
         while ((key = watchService.take()) != null) {
             for (WatchEvent<?> event : key.pollEvents()) {
+                // Get the fields necessary
                 Path filename = (Path)event.context();
                 Path fullPath = rootPath.resolve(filename);
                 String user = System.getProperty("user.name");
                 Date date = new Date();
+
+                // Format necessary fields to a string format
                 String action = stringifyAction(event.kind());
-                batch--;
-
                 String formattedDate = formatDate(date);
+                batch--;
+                String avroKey = "key1";
 
+                // Get the schema from registry
+                Schema schema = SchemaRegistryUtils.retrieveSchemaFromRegistry(SchemaRegistryUtils.SCHEMA_URL);
+                GenericRecord avroRecord = new GenericData.Record(schema);
+
+                // Fill the fields of the avro schema with data
+                avroRecord.put("fileName", filename);
+                avroRecord.put("filePath", fullPath.toString());
+                avroRecord.put("user", user);
+                avroRecord.put("date", formattedDate);
+                avroRecord.put("action", action);
+
+                // Create a record witht the info
+                ProducerRecord<Object, Object> record =
+                        new ProducerRecord<>(KafkaProducerApplication.JSON_EVENTS_TOPIC, avroKey, avroRecord);
+
+                /*
                 FileEventData eventData = new FileEventData(filename.toString(), fullPath.toString(), user, formattedDate, action);
                 String jsonEvent = om.writeValueAsString(eventData);
-                jsonObjects.add(jsonEvent);
+                */
+
+                // Store the records in an arraylist
+                producerRecords.add(record);
                 if(batch == 0){
                     batch = 10;
-                    return jsonObjects;
+                    return producerRecords;
                 }
             }
             key.reset();
         }
-        return jsonObjects;
+        return producerRecords;
     }
 
     private static String stringifyAction(WatchEvent.Kind<?> kind) {
