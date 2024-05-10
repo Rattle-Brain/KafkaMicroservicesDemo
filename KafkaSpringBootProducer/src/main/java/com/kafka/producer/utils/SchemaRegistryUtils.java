@@ -1,5 +1,8 @@
 package com.kafka.producer.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.avro.Schema;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -7,10 +10,15 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.apache.tomcat.util.json.JSONParser;
+import org.apache.tomcat.util.json.ParseException;
+import org.json.JSONArray;
 
 import java.io.IOException;
 
 public class SchemaRegistryUtils {
+
+    public static final String SCHEMA_URL = "http://localhost:8090/subjects/file-event/versions/latest";
 
     /**
      * Tries to connect to a schema registry by url and retrieve a schema for later use.
@@ -27,7 +35,9 @@ public class SchemaRegistryUtils {
 
             if (response.getStatusLine().getStatusCode() == 200) {
                 HttpEntity entity = response.getEntity();
-                String schemaJson = EntityUtils.toString(entity);
+                String result = EntityUtils.toString(entity);
+                String schemaJson = getSchemaFromJSON(result);
+                //String schemaJson = "{\"type\":\"record\",\"name\":\"FileEvent\",\"fields\":[{\"name\":\"fileName\",\"type\":\"string\"},{\"name\":\"filePath\",\"type\":\"string\"},{\"name\":\"user\",\"type\":\"string\"},{\"name\":\"date\",\"type\":\"string\"},{\"name\":\"action\",\"type\":\"string\"}]}";
 
                 // Parse the JSON schema string into an Avro Schema object
                 return new Schema.Parser().parse(schemaJson);
@@ -39,4 +49,31 @@ public class SchemaRegistryUtils {
             httpClient.close();
         }
     }
+
+    /**
+     * Obtains the actual schema definition from the JSON response retrieved from the server
+     *
+     * @param jsonResponse String with the JSON Response
+     * @return String with just the schema definition
+     * @throws IOException
+     */
+    public static String getSchemaFromJSON(String jsonResponse) {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = null;
+        try {
+            root = mapper.readTree(jsonResponse);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+
+        // Extract the Avro schema string from the "schema" field
+        JsonNode schemaNode = root.get("schema");
+        if (schemaNode != null) {
+            System.err.println("schemaNode: " + schemaNode.asText());
+            return schemaNode.asText();
+        } else {
+            throw new IllegalArgumentException("Avro schema not found in the JSON response");
+        }
+    }
+
 }
