@@ -1,5 +1,7 @@
 package com.kafka.consumer.listener;
 
+import org.apache.avro.generic.GenericRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
@@ -21,10 +23,12 @@ public class KafkaConsumerListener {
     }
 */
     @KafkaListener(topics = {"json-file-events"}, groupId = "JSON-listener-id")
-    public void listenerJSONFileEvents(String msg){
-        LOGGER.info("Msg from topic \"json-file-events\":\n");
-        System.out.println("\t" + msg);
+    public void listen(ConsumerRecord<String, GenericRecord> record) {
+        System.out.println("Received message: " + record.value());
+        // Handle the received Avro message
     }
+
+
 
     @KafkaListener(topics = {"bpf-events-topic"}, groupId = "BPF-listener-id")
     public void listenerBPFEvents(String msg){
