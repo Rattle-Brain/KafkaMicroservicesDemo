@@ -86,8 +86,10 @@ public class KafkaProducerUtils {
                     kp.send(pr);
                     System.out.println("Event Sent");
                 }catch(SerializationException se){
-                    System.err.println(se.getMessage());
+                    // System.err.println(se.getMessage());
+                    se.printStackTrace();
                     kp.flush();
+                    System.exit(-1);
                 }
             }
         }
@@ -129,7 +131,7 @@ public class KafkaProducerUtils {
                 GenericRecord avroRecord = new GenericData.Record(schema);
 
                 // Fill the fields of the avro schema with data
-                avroRecord.put("fileName", filename);
+                avroRecord.put("fileName", filename.toString());
                 avroRecord.put("filePath", fullPath.toString());
                 avroRecord.put("user", user);
                 avroRecord.put("date", formattedDate);

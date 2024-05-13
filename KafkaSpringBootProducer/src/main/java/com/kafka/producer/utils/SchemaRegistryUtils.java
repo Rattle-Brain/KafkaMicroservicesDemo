@@ -10,14 +10,12 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.apache.tomcat.util.json.JSONParser;
-import org.apache.tomcat.util.json.ParseException;
 
 import java.io.IOException;
 
 public class SchemaRegistryUtils {
 
-    public static final String SCHEMA_URL = "http://localhost:8090/subjects/file-event/versions/latest";
+    public static final String SCHEMA_URL = "http://localhost:8090/subjects/json-file-events/versions/1";
 
     /**
      * Tries to connect to a schema registry by url and retrieve a schema for later use.
@@ -36,7 +34,6 @@ public class SchemaRegistryUtils {
                 HttpEntity entity = response.getEntity();
                 String result = EntityUtils.toString(entity);
                 String schemaJson = getSchemaFromJSON(result);
-                //String schemaJson = "{\"type\":\"record\",\"name\":\"FileEvent\",\"fields\":[{\"name\":\"fileName\",\"type\":\"string\"},{\"name\":\"filePath\",\"type\":\"string\"},{\"name\":\"user\",\"type\":\"string\"},{\"name\":\"date\",\"type\":\"string\"},{\"name\":\"action\",\"type\":\"string\"}]}";
 
                 // Parse the JSON schema string into an Avro Schema object
                 return new Schema.Parser().parse(schemaJson);

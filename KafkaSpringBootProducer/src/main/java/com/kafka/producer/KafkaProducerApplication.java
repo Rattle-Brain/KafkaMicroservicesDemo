@@ -29,10 +29,11 @@ public class KafkaProducerApplication {
 	}
 
 	@Bean
-	CommandLineRunner init (KafkaTemplate<String, ProducerRecord> kt){
+	CommandLineRunner init (KafkaTemplate<String, String> kt){
 		return args -> {
 			KafkaProducerUtils.sendFileJSON(kp);
 			//UDPSockUtils.retrieveUDP(kt, 3040);
+			//KafkaProducerUtils.readSendUserInput(kt);
 		};
 	}
 

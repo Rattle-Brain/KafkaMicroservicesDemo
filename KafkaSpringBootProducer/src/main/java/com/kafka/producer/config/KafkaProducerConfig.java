@@ -1,16 +1,12 @@
 package com.kafka.producer.config;
 
-import com.fasterxml.jackson.databind.ser.std.StringSerializer;
 import com.kafka.producer.utils.SchemaRegistryUtils;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 
@@ -26,7 +22,7 @@ public class KafkaProducerConfig {
                 org.apache.kafka.common.serialization.StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
                 io.confluent.kafka.serializers.KafkaAvroSerializer.class);
-        props.put("schema.registry.url", SchemaRegistryUtils.SCHEMA_URL);
+        props.put("schema.registry.url", "http://localhost:8090");
 
         return props;
     }
